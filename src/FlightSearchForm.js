@@ -1,29 +1,7 @@
 import React, { Component } from 'react'
 import { FormGroup, ControlLabel, FormControl } from 'react-bootstrap'
 
-const updateStateProp = function(stateProperty) {
-    return function(event) {
-        this.setState({
-            [stateProperty]: event.target.value
-        })
-
-    }
-}
-
 export default class FlightSearchForm extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            from: props.search.from,
-            to: props.search.to,
-            date: props.search.date
-        };
-
-        this.onFromChange = updateStateProp('from').bind(this);
-        this.onToChange = updateStateProp('to').bind(this);
-        this.onDateChange = updateStateProp('date').bind(this);
-    }
-
     render() {
         return (
             <form>
@@ -32,27 +10,27 @@ export default class FlightSearchForm extends Component {
                     <ControlLabel>From</ControlLabel>
                     <FormControl
                         type="text"
-                        value={this.state.from}
+                        value={this.props.from}
                         placeholder="From"
-                        onChange={this.onFromChange}
+                        onChange={this.props.onFromChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <ControlLabel>To</ControlLabel>
                     <FormControl
                         type="text"
-                        value={this.state.to}
+                        value={this.props.to}
                         placeholder="To"
-                        onChange={this.onToChange}
+                        onChange={this.props.onToChange}
                     />
                 </FormGroup>
                 <FormGroup>
                     <ControlLabel>Date</ControlLabel>
                     <FormControl
                         type="date"
-                        value={this.state.date}
+                        value={this.props.date}
                         placeholder="Date"
-                        onChange={this.onDateChange}
+                        onChange={this.props.onDateChange}
                     />
                 </FormGroup>
 
