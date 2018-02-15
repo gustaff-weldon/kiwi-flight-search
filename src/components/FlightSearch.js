@@ -5,7 +5,6 @@ export default class FlightSearchForm extends Component {
     render() {
         return (
             <form>
-                <div>Hello world</div>
                 <FormGroup>
                     <ControlLabel>From</ControlLabel>
                     <FormControl
@@ -33,7 +32,6 @@ export default class FlightSearchForm extends Component {
                         onChange={this.props.onDateChange}
                     />
                 </FormGroup>
-
             </form>
         )
     }

@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css';
-import FlightSearchForm from './FlightSearchForm';
+import FlightSearchForm from './components/FlightSearch';
+import FlightList from './components/FlightList';
 
 const updateStateProp = function (stateProperty) {
   return function (event) {
@@ -20,12 +21,16 @@ class App extends Component {
       from: "",
       to: "",
       date: "",
-      flights: []
+      flights: [{
+        timeTakeOff: '12:10',
+        timeLanding: '13:00',
+        price: '100 EUR'
+      }]
     }
 
-    this.onFromChange = updateStateProp('from').bind(this);
-    this.onToChange = updateStateProp('to').bind(this);
-    this.onDateChange = updateStateProp('date').bind(this);
+    this.handleFromChange = updateStateProp('from').bind(this);
+    this.handleToChange = updateStateProp('to').bind(this);
+    this.handleDateChange = updateStateProp('date').bind(this);
   }
 
   render() {
@@ -38,15 +43,15 @@ class App extends Component {
             from={this.state.from}
             to={this.state.to}
             date={this.state.date}
-            onFromChange={this.onFromChange}
-            onToChange={this.onToChange}
-            onDateChange={this.onDateChange}
+            onFromChange={this.handleFromChange}
+            onToChange={this.handleToChange}
+            onDateChange={this.handleDateChange}
           />
         </header>
 
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <section className="App-intro">
+          <FlightList flights={this.state.flights} />
+        </section>
       </div>
     );
   }
