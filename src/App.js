@@ -1,17 +1,25 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import 'bootstrap/dist/css/bootstrap.css';
-import './App.css';
-import FlightSearchForm from './components/FlightSearch';
-import FlightList from './components/FlightList';
+import React, { Component } from 'react'
+import moment from 'moment'
+import throttle from 'lodash.throttle'
 
-const updateStateProp = function (stateProperty) {
-  return function (event) {
+import FlightSearchForm from './components/FlightSearch'
+import FlightList from './components/FlightList'
+import { findFlights } from './api/flights'
+
+import logo from './logo.svg';
+import 'bootstrap/dist/css/bootstrap.css'
+import './App.css'
+
+
+const throttledFindFlights = throttle(findFlights, 1000)
+
+const updateStateProperty = function (stateProperty) {
+  return function (value) {
     this.setState({
-      [stateProperty]: event.target.value
+      [stateProperty]: value
     })
   }
-};
+}
 
 class App extends Component {
 
@@ -20,17 +28,40 @@ class App extends Component {
     this.state = {
       from: "",
       to: "",
-      date: "",
-      flights: [{
-        timeTakeOff: '12:10',
-        timeLanding: '13:00',
-        price: '100 EUR'
-      }]
+      date: moment(),
+      flights: []
     }
 
-    this.handleFromChange = updateStateProp('from').bind(this);
-    this.handleToChange = updateStateProp('to').bind(this);
-    this.handleDateChange = updateStateProp('date').bind(this);
+    this.handleFromChange = updateStateProperty('from').bind(this)
+    this.handleToChange = updateStateProperty('to').bind(this)
+    this.handleDateChange = updateStateProperty('date').bind(this)
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    const { from, to, date } = this.state
+
+    // no important state change, ignore
+    if (from === prevState.from && to === prevState.to && date === prevState.date) {
+      return
+    }
+    console.log(this.state)
+
+    if (from && to && date) {
+      console.log('Triggered flights for', from, to, date)
+      throttledFindFlights(from, to, date)
+        .then((flights) => {
+          console.log('got', flights.length)
+          this.setState({ flights: flights })
+        })
+        .catch(function () {
+          // noop atm might show a flash message or sth
+        })
+    } else {
+      // one of the needed values was cleared, clear flights list as well
+      this.setState({
+        flights: []
+      })
+    }
   }
 
   render() {

@@ -1,18 +1,21 @@
 import React,  { Component } from 'react'
+import FlightDetails from './FlightDetails'
 
 export default class FlightList extends Component {
     render() {
         const rows = this.props.flights.map(function (flight) {
-            return (<tr>
-                <td>{flight.timeTakeOff}</td>
-                <td>{flight.timeLanding}</td>
-                <td>{flight.price}</td>
-            </tr>)
+            return <FlightDetails flight={flight} key={flight.id} />
         })
 
         return (
             <table>
-                { rows }
+                <tbody>
+                    {
+                        rows.length
+                            ? [ rows ]
+                            : <tr><td>No flights found</td></tr>
+                    }
+                </tbody>
             </table>
         )
     }

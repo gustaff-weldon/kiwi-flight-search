@@ -1,5 +1,16 @@
 import React, { Component } from 'react'
+import DatePicker from 'react-datepicker'
+import moment from 'moment'
+
 import { FormGroup, ControlLabel, FormControl } from 'react-bootstrap'
+
+import 'react-datepicker/dist/react-datepicker.css'
+
+const callWithInputValue = function (handler) {
+    return function(event) {
+        return handler(event.target.value)
+    }
+}
 
 export default class FlightSearchForm extends Component {
     render() {
@@ -11,7 +22,7 @@ export default class FlightSearchForm extends Component {
                         type="text"
                         value={this.props.from}
                         placeholder="From"
-                        onChange={this.props.onFromChange}
+                        onChange={callWithInputValue(this.props.onFromChange)}
                     />
                 </FormGroup>
                 <FormGroup>
@@ -20,15 +31,16 @@ export default class FlightSearchForm extends Component {
                         type="text"
                         value={this.props.to}
                         placeholder="To"
-                        onChange={this.props.onToChange}
+                        onChange={callWithInputValue(this.props.onToChange)}
                     />
                 </FormGroup>
                 <FormGroup>
                     <ControlLabel>Date</ControlLabel>
-                    <FormControl
-                        type="date"
-                        value={this.props.date}
-                        placeholder="Date"
+                    <DatePicker
+                        className="form-control"
+                        dateFormat="DD/MM/YYYY"
+                        minDate={moment()}
+                        selected={this.props.date}
                         onChange={this.props.onDateChange}
                     />
                 </FormGroup>
