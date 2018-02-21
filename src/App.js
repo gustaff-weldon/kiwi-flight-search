@@ -5,9 +5,9 @@ import update from 'immutability-helper'
 
 import FlightSearchForm from './components/FlightSearch'
 import FlightList from './components/FlightList'
+import Pagination from './components/Pagination'
 import { findFlights } from './api/flights'
 
-import logo from './logo.svg';
 import 'bootstrap/dist/css/bootstrap.css'
 import './App.css'
 
@@ -21,6 +21,16 @@ const updateStateProperty = function (stateGroup, groupProperty) {
   }
 }
 
+const emptyFlightsState = function() {
+  return {
+    flights: [],
+    currency: 'EUR',
+    offset: 0,
+    limit: 5,
+    total: 0
+  }
+}
+
 class App extends Component {
 
   constructor(props) {
@@ -31,63 +41,66 @@ class App extends Component {
         to: "",
         date: moment(),
       },
-      flightResults: {
-        flights: [],
-        offset: 0,
-        limit: 20
-      }
+      flightResults: emptyFlightsState()
     }
 
     this.handleFromChange = updateStateProperty('flightSearch', 'from').bind(this)
     this.handleToChange = updateStateProperty('flightSearch', 'to').bind(this)
     this.handleDateChange = updateStateProperty('flightSearch', 'date').bind(this)
-    this.onFlightSearchChange = debounce(this.onFlightSearchChange, 300) // no need to hit server too often
+    this.handleFlightSearchChange = debounce(this.handleFlightSearchChange, 100).bind(this) // no need to hit server too often
+    this.handleOffsetChange = this.handleOffsetChange.bind(this)
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { from, to, date } = this.state.flightSearch
+    const
+      { from, to, date } = this.state.flightSearch,
+      { offset } = this.state.flightResults
 
-    // no important state change, ignore
-    if (from === prevState.flightSearch.from && to === prevState.flightSearch.to && date === prevState.flightSearch.date) {
+    // prevent requests when state change does not affect results
+    if (from === prevState.flightSearch.from
+        && to === prevState.flightSearch.to
+        && date === prevState.flightSearch.date
+        && offset === prevState.flightResults.offset) {
       return
     }
-    console.log(this.state)
 
-    this.onFlightSearchChange()
+    this.handleFlightSearchChange()
   }
 
-  onFlightSearchChange() {
-    const { from, to, date } = this.state.flightSearch
+  handleFlightSearchChange() {
+    const
+      { from, to, date } = this.state.flightSearch,
+      { offset, limit } = this.state.flightResults
 
     if (!from || !to || !date) {
-      // at least one of the required values is missing, reset flights list an bail out
-      const newState = update(this.state, {
-        flightResults: { flights: { $set: [] } }
+      // at least one of the required values is missing, reset search results
+      this.setState({
+        flightResults: emptyFlightsState()
       })
-      this.setState(newState)
       return
     }
 
-    console.log('Triggered flights for', from, to, date)
-    findFlights(from, to, date)
-      .then((flights) => {
-        console.log('got', flights.length)
-        const newState = update(this.state, {
-          flightResults: { flights: { $set: flights } }
-        })
-        this.setState(newState)
+    findFlights({ from, to, date, offset, limit })
+      .then((flightResults) => {
+      console.log('flight results', flightResults)
+        this.setState({ flightResults })
       })
       .catch(function () {
         // noop atm might show a flash message or sth
       })
   }
 
+  handleOffsetChange(newOffset) {
+    const newState = update(this.state, {
+      flightResults: { offset: { $set: newOffset } }
+    })
+    this.setState(newState)
+  }
+
   render() {
     return (
       <div className="App">
         <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
           <FlightSearchForm
             from={this.state.flightSearch.from}
             to={this.state.flightSearch.to}
@@ -99,7 +112,13 @@ class App extends Component {
         </header>
 
         <section className="App-intro">
-          <FlightList flights={this.state.flightResults.flights} />
+          <FlightList flights={this.state.flightResults.flights} currency={this.state.flightResults.currency} />
+          <Pagination
+            offset={this.state.flightResults.offset}
+            limit={this.state.flightResults.limit}
+            total={this.state.flightResults.total}
+            onOffsetChange={this.handleOffsetChange}
+          />
         </section>
       </div>
     );
