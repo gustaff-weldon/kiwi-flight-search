@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import moment from 'moment'
 import debounce from 'lodash.debounce'
+import update from 'immutability-helper'
 
 import FlightSearchForm from './components/FlightSearch'
 import FlightList from './components/FlightList'
@@ -11,11 +12,12 @@ import 'bootstrap/dist/css/bootstrap.css'
 import './App.css'
 
 
-const updateStateProperty = function (stateProperty) {
+const updateStateProperty = function (stateGroup, groupProperty) {
   return function (value) {
-    this.setState({
-      [stateProperty]: value
+    const newState = update(this.state, {
+      [stateGroup]: { [groupProperty]: { $set: value } }
     })
+    this.setState(newState)
   }
 }
 
@@ -24,23 +26,29 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      from: "",
-      to: "",
-      date: moment(),
-      flights: []
+      flightSearch: {
+        from: "",
+        to: "",
+        date: moment(),
+      },
+      flightResults: {
+        flights: [],
+        offset: 0,
+        limit: 20
+      }
     }
 
-    this.handleFromChange = updateStateProperty('from').bind(this)
-    this.handleToChange = updateStateProperty('to').bind(this)
-    this.handleDateChange = updateStateProperty('date').bind(this)
+    this.handleFromChange = updateStateProperty('flightSearch', 'from').bind(this)
+    this.handleToChange = updateStateProperty('flightSearch', 'to').bind(this)
+    this.handleDateChange = updateStateProperty('flightSearch', 'date').bind(this)
     this.onFlightSearchChange = debounce(this.onFlightSearchChange, 300) // no need to hit server too often
   }
 
   componentDidUpdate(prevProps, prevState) {
-    const { from, to, date } = this.state
+    const { from, to, date } = this.state.flightSearch
 
     // no important state change, ignore
-    if (from === prevState.from && to === prevState.to && date === prevState.date) {
+    if (from === prevState.flightSearch.from && to === prevState.flightSearch.to && date === prevState.flightSearch.date) {
       return
     }
     console.log(this.state)
@@ -49,13 +57,14 @@ class App extends Component {
   }
 
   onFlightSearchChange() {
-    const { from, to, date } = this.state
+    const { from, to, date } = this.state.flightSearch
 
     if (!from || !to || !date) {
       // at least one of the required values is missing, reset flights list an bail out
-      this.setState({
-        flights: []
+      const newState = update(this.state, {
+        flightResults: { flights: { $set: [] } }
       })
+      this.setState(newState)
       return
     }
 
@@ -63,7 +72,10 @@ class App extends Component {
     findFlights(from, to, date)
       .then((flights) => {
         console.log('got', flights.length)
-        this.setState({ flights: flights })
+        const newState = update(this.state, {
+          flightResults: { flights: { $set: flights } }
+        })
+        this.setState(newState)
       })
       .catch(function () {
         // noop atm might show a flash message or sth
@@ -77,9 +89,9 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
           <FlightSearchForm
-            from={this.state.from}
-            to={this.state.to}
-            date={this.state.date}
+            from={this.state.flightSearch.from}
+            to={this.state.flightSearch.to}
+            date={this.state.flightSearch.date}
             onFromChange={this.handleFromChange}
             onToChange={this.handleToChange}
             onDateChange={this.handleDateChange}
@@ -87,7 +99,7 @@ class App extends Component {
         </header>
 
         <section className="App-intro">
-          <FlightList flights={this.state.flights} />
+          <FlightList flights={this.state.flightResults.flights} />
         </section>
       </div>
     );
