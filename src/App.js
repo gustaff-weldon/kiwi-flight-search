@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import moment from 'moment'
-import throttle from 'lodash.throttle'
+import debounce from 'lodash.debounce'
 
 import FlightSearchForm from './components/FlightSearch'
 import FlightList from './components/FlightList'
@@ -10,8 +10,6 @@ import logo from './logo.svg';
 import 'bootstrap/dist/css/bootstrap.css'
 import './App.css'
 
-
-const throttledFindFlights = throttle(findFlights, 1000)
 
 const updateStateProperty = function (stateProperty) {
   return function (value) {
@@ -35,6 +33,7 @@ class App extends Component {
     this.handleFromChange = updateStateProperty('from').bind(this)
     this.handleToChange = updateStateProperty('to').bind(this)
     this.handleDateChange = updateStateProperty('date').bind(this)
+    this.onFlightSearchChange = debounce(this.onFlightSearchChange, 300) // no need to hit server too often
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -46,22 +45,29 @@ class App extends Component {
     }
     console.log(this.state)
 
-    if (from && to && date) {
-      console.log('Triggered flights for', from, to, date)
-      throttledFindFlights(from, to, date)
-        .then((flights) => {
-          console.log('got', flights.length)
-          this.setState({ flights: flights })
-        })
-        .catch(function () {
-          // noop atm might show a flash message or sth
-        })
-    } else {
-      // one of the needed values was cleared, clear flights list as well
+    this.onFlightSearchChange()
+  }
+
+  onFlightSearchChange() {
+    const { from, to, date } = this.state
+
+    if (!from || !to || !date) {
+      // at least one of the required values is missing, reset flights list an bail out
       this.setState({
         flights: []
       })
+      return
     }
+
+    console.log('Triggered flights for', from, to, date)
+    findFlights(from, to, date)
+      .then((flights) => {
+        console.log('got', flights.length)
+        this.setState({ flights: flights })
+      })
+      .catch(function () {
+        // noop atm might show a flash message or sth
+      })
   }
 
   render() {
