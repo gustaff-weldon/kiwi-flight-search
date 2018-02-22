@@ -1,36 +1,63 @@
 import React from 'react'
+
+import Autocomplete from 'react-autocomplete'
 import DatePicker from 'react-datepicker'
 import moment from 'moment'
-
-import { FormGroup, ControlLabel, FormControl } from 'react-bootstrap'
+import { FormGroup, ControlLabel } from 'react-bootstrap'
 
 import 'react-datepicker/dist/react-datepicker.css'
 
 const callWithInputValue = function (handler) {
     return function(event) {
-        return handler(event.target.value)
+        return handler({ name: event.target.value })
     }
 }
 
-export default function({ from, to, date, onFromChange, onToChange, onDateChange }) {
+const formatLocationName = function(location) {
+    return location.type === 'airport'
+        ? `${location.name} (${location.code})`
+        : location.name
+}
+
+export default function ({ from, fromSuggestions, to, toSuggestions, date, onFromChange, onToChange, onDateChange }) {
     return (
         <form>
             <FormGroup>
                 <ControlLabel>From</ControlLabel>
-                <FormControl
-                    type="text"
-                    value={from}
-                    placeholder="From"
+                <Autocomplete
+                    getItemValue={formatLocationName}
+                    items={fromSuggestions}
+                    inputProps={{
+                        className: "form-control"
+                    }}
+                    renderItem={(item, isHighlighted) =>
+                        <div key={item.id} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+                            {formatLocationName(item)}
+                        </div>
+                    }
+                    value={formatLocationName(from)}
+                    wrapperStyle={{}}
                     onChange={callWithInputValue(onFromChange)}
+                    onSelect={(value, item) => onFromChange(item)}
                 />
             </FormGroup>
             <FormGroup>
                 <ControlLabel>To</ControlLabel>
-                <FormControl
-                    type="text"
-                    value={to}
-                    placeholder="To"
+                <Autocomplete
+                    getItemValue={formatLocationName}
+                    items={toSuggestions}
+                    inputProps={{
+                        className: "form-control"
+                    }}
+                    renderItem={(item, isHighlighted) =>
+                        <div key={item.id} style={{ background: isHighlighted ? 'lightgray' : 'white' }}>
+                            {formatLocationName(item)}
+                        </div>
+                    }
+                    value={formatLocationName(to)}
+                    wrapperStyle={{}}
                     onChange={callWithInputValue(onToChange)}
+                    onSelect={(value, item) => onToChange(item)}
                 />
             </FormGroup>
             <FormGroup>
