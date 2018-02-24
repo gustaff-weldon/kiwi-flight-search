@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Grid } from 'react-bootstrap'
 import moment from 'moment'
 import debounce from 'lodash.debounce'
 import update from 'immutability-helper'
@@ -52,7 +53,8 @@ class App extends Component {
                 toSuggestions: [],
                 date: moment(),
             },
-            flightResults: emptyFlightsState()
+            flightResults: emptyFlightsState(),
+            isSearching: false
         }
 
         this.handleFromChange = updateStateProperty('flightSearch', 'from')
@@ -105,12 +107,17 @@ class App extends Component {
             return
         }
 
+        this.setState({ isSearching: true })
+
         findFlights({ from: from.code, to: to.code, date, offset, limit })
             .then((flightResults) => {
                 this.setState({ flightResults })
             })
             .catch(function () {
                 // noop atm, might show a flash message or sth
+            })
+            .finally(() => {
+                this.setState({ isSearching: false })
             })
     }
 
@@ -148,24 +155,23 @@ class App extends Component {
 
     render() {
         return (
-            <div className="App">
-                <header className="App-header">
-                    <FlightSearchForm
-                        from={this.state.flightSearch.from}
-                        fromSuggestions={this.state.flightSearch.fromSuggestions}
-                        to={this.state.flightSearch.to}
-                        toSuggestions={this.state.flightSearch.toSuggestions}
-                        date={this.state.flightSearch.date}
-                        onFromChange={this.handleFromChange}
-                        onToChange={this.handleToChange}
-                        onDateChange={this.handleDateChange}
-                    />
-                </header>
+            <Grid fluid={true}>
+                <FlightSearchForm
+                    from={this.state.flightSearch.from}
+                    fromSuggestions={this.state.flightSearch.fromSuggestions}
+                    to={this.state.flightSearch.to}
+                    toSuggestions={this.state.flightSearch.toSuggestions}
+                    date={this.state.flightSearch.date}
+                    onFromChange={this.handleFromChange}
+                    onToChange={this.handleToChange}
+                    onDateChange={this.handleDateChange}
+                />
 
                 <section className="App-intro">
                     <FlightList
                         flights={this.state.flightResults.flights}
-                        currency={this.state.flightResults.currency} />
+                        currency={this.state.flightResults.currency}
+                    />
                     <Pagination
                         offset={this.state.flightResults.offset}
                         limit={this.state.flightResults.limit}
@@ -173,8 +179,8 @@ class App extends Component {
                         onOffsetChange={this.handleOffsetChange}
                     />
                 </section>
-            </div>
-        );
+            </Grid>
+        )
     }
 }
 
