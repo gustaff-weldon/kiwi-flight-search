@@ -1,11 +1,14 @@
 import React from 'react'
 
 import { Col, ControlLabel, FormGroup, Row } from 'react-bootstrap'
-import DayPickerInput from 'react-day-picker/DayPickerInput';
-import { formatDate, parseDate } from 'react-day-picker/moment';
-import moment from 'moment'
+import DayPickerInput from 'react-day-picker/DayPickerInput'
+import { formatDate, parseDate } from 'react-day-picker/moment'
 import { Typeahead } from 'react-bootstrap-typeahead'
-import 'react-day-picker/lib/style.css';
+import 'react-day-picker/lib/style.css'
+
+
+const
+    DATE_FORMAT = "ddd MMM DD"
 
 const formatLocationName = function(location) {
     return location.type === 'airport'
@@ -51,16 +54,20 @@ export default function ({ from, fromSuggestions, to, toSuggestions, date, onFro
             <Col md={4} >
                 <FormGroup>
                     <ControlLabel>Date</ControlLabel>
+                    {/*
+                        FIXME there's an issue with the date field being editable atm,
+                        we want to display nice date but we do not want user to edit it in the field
+                    */}
                     <DayPickerInput
                         classNames={{ container: "", overlay: "dropdown-menu", overlayWrapper: "dropdown open" }}
                         dayPickerProps={{ disabledDays: { before: new Date() } }}
                         inputProps={{ className: "form-control" }}
-                        format="DD/MM/YYYY"
+                        format={DATE_FORMAT}
                         formatDate={formatDate}
                         parseDate={parseDate}
                         onDayChange={onDateChange}
-                        placeholder="DD/MM/YYYY"
-                        selectedDays={date}
+                        placeholder=""
+                        value={date}
                     />
                 </FormGroup>
             </Col>

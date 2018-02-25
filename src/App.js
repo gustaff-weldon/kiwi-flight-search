@@ -51,7 +51,7 @@ class App extends Component {
                     code: ""
                 },
                 toSuggestions: [],
-                date: moment(),
+                date: new Date(),
             },
             flightResults: emptyFlightsState(),
             isSearching: false

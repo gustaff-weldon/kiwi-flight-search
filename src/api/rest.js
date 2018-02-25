@@ -1,8 +1,10 @@
 import moment from 'moment'
 
+const API_DATE_FORMAT = 'DD/MM/YYYY'
+
 export function findFlights({ currency = 'EUR', from, to, date, offset = 0, limit = 20 }) {
     const
-        formattedDate = moment(date).format('DD/MM/YYYY'),
+        formattedDate = moment(date).format(API_DATE_FORMAT),
         url = 'https://api.skypicker.com/flights?' +
             `flyFrom=${from}&to=${to}` +
             `&dateFrom=${formattedDate}&dateTo=${formattedDate}` +

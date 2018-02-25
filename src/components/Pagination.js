@@ -1,13 +1,16 @@
 import React from 'react'
+import { Pagination } from 'react-bootstrap'
 
 export default function ({ offset, limit, total, onOffsetChange }) {
     let pages = []
 
     const renderPageNumber = function(page, pageOffset) {
         return (
-            <li key={pageOffset} className={pageOffset === offset ? 'current' : ''}>
-                <a onClick={() => onOffsetChange(pageOffset)}>{page}</a>
-            </li>
+            <Pagination.Item
+                active={pageOffset === offset}
+                key={pageOffset}
+                onClick={() => onOffsetChange(pageOffset)}>{page}
+            </Pagination.Item>
         )
     }
 
@@ -17,11 +20,7 @@ export default function ({ offset, limit, total, onOffsetChange }) {
 
     return (
         <nav>
-            <ul>
-                {
-                    [pages]
-                }
-            </ul>
+            <Pagination>{pages}</Pagination>
         </nav>
     )
 }
