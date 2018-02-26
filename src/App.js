@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
-import { Grid } from 'react-bootstrap'
+import { Grid, Panel } from 'react-bootstrap'
 import debounce from 'lodash.debounce'
 import update from 'immutability-helper'
 
 import FlightSearchForm from './components/FlightSearch'
 import FlightList from './components/FlightList'
 import Pagination from './components/Pagination'
+import ProgressLine from './components/ProgressLine'
 import { findFlights, findLocations } from './api/rest'
 
 import 'bootstrap/dist/css/bootstrap.css'
@@ -53,6 +54,7 @@ class App extends Component {
                 date: new Date(),
             },
             flightResults: emptyFlightsState(),
+            hasValidSearch: false,
             isSearching: false
         }
 
@@ -101,12 +103,16 @@ class App extends Component {
         if (!from || !from.code || !to || !to.code || !date) {
             // at least one of the required values is missing, reset search results
             this.setState({
+                hasValidSearch: false,
                 flightResults: emptyFlightsState()
             })
             return
         }
 
-        this.setState({ isSearching: true })
+        this.setState({
+            isSearching: true,
+            hasValidSearch: true,
+        })
 
         findFlights({ from: from.code, to: to.code, date, offset, limit })
             .then((flightResults) => {
@@ -153,8 +159,13 @@ class App extends Component {
     }
 
     render() {
+        const progress = this.state.isSearching
+            ? <ProgressLine />
+            : ""
+
         return (
-            <Grid className="content" fluid={true}>
+            <Grid className="content pad-ver--m pad-hor--l" fluid={true}>
+
                 <FlightSearchForm
                     from={this.state.flightSearch.from}
                     fromSuggestions={this.state.flightSearch.fromSuggestions}
@@ -166,10 +177,17 @@ class App extends Component {
                     onDateChange={this.handleDateChange}
                 />
 
-                <FlightList
-                    flights={this.state.flightResults.flights}
-                    currency={this.state.flightResults.currency}
-                />
+                {progress}
+
+                {this.state.hasValidSearch ? (
+                    <FlightList
+                        flights={this.state.flightResults.flights}
+                        currency={this.state.flightResults.currency}
+                    />
+                ) : (
+                    <Panel className="pad-all--l text-center">Plan your yourney!</Panel>
+                )}
+
                 <Pagination
                     offset={this.state.flightResults.offset}
                     limit={this.state.flightResults.limit}

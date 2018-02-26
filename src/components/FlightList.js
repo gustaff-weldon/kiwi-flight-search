@@ -2,8 +2,6 @@ import React from 'react'
 import FlightDetails from './FlightDetails'
 import { Panel } from 'react-bootstrap'
 
-import './FlightList.css'
-
 export default function({ flights, currency }) {
     const rows = flights.map(function (flight) {
         return <FlightDetails
@@ -18,7 +16,7 @@ export default function({ flights, currency }) {
             {
                 rows.length
                     ? [ rows ]
-                    : <Panel className="flight-list__empty text-center">No flights found</Panel>
+                    : <Panel className="pad-all--l text-center">We came up empty :(  Try another date?</Panel>
             }
         </section>
     )

@@ -1,5 +1,17 @@
 .content {
-  padding: 40px;
   margin: auto;
   max-width: 800px;
+}
+
+/* helpers */
+.pad-ver--m {
+    padding: 10px;
+}
+
+.pad-hor--l {
+    padding: 20px;
+}
+
+.pad-all--l {
+  padding: 20px;
 }
