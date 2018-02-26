@@ -10,7 +10,7 @@ export function findFlights({ currency = 'EUR', from, to, date, offset = 0, limi
             `&dateFrom=${formattedDate}&dateTo=${formattedDate}` +
             `&curr=${currency}` +
             `&offset=${offset}&limit=${limit}` +
-            `&sort=price&asc=1`
+            '&sort=price&asc=1'
 
     return fetch(url).then(function(response) {
         return response.json()

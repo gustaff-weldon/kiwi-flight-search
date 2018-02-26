@@ -59,9 +59,9 @@ export default function ({ from, fromSuggestions, to, toSuggestions, date, onFro
                         we want to display nice date but we do not want user to edit it in the field
                     */}
                     <DayPickerInput
-                        classNames={{ container: "", overlay: "dropdown-menu", overlayWrapper: "dropdown open" }}
+                        classNames={{ container: '', overlay: 'dropdown-menu', overlayWrapper: 'dropdown open' }}
                         dayPickerProps={{ disabledDays: { before: new Date() } }}
-                        inputProps={{ className: "form-control" }}
+                        inputProps={{ className: 'form-control' }}
                         format={DATE_WEEK_DAY_MONTH}
                         formatDate={formatDate}
                         parseDate={parseDate}

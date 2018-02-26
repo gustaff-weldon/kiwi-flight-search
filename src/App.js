@@ -42,13 +42,13 @@ class App extends Component {
         this.state = {
             flightSearch: {
                 from: {
-                    name: "",
-                    code: ""
+                    name: '',
+                    code: ''
                 },
                 fromSuggestions: [],
                 to: {
-                    name: "",
-                    code: ""
+                    name: '',
+                    code: ''
                 },
                 toSuggestions: [],
                 date: new Date(),
@@ -161,7 +161,7 @@ class App extends Component {
     render() {
         const progress = this.state.isSearching
             ? <ProgressLine />
-            : ""
+            : ''
 
         return (
             <Grid className="content pad-ver--m pad-hor--l" fluid={true}>
@@ -199,4 +199,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default App
