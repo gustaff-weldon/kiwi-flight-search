@@ -2,13 +2,13 @@ import React from 'react'
 
 import { Col, ControlLabel, FormGroup, Row } from 'react-bootstrap'
 import DayPickerInput from 'react-day-picker/DayPickerInput'
+import { DATE_WEEK_DAY_MONTH } from './DateFormat'
 import { formatDate, parseDate } from 'react-day-picker/moment'
 import { Typeahead } from 'react-bootstrap-typeahead'
 import 'react-day-picker/lib/style.css'
 
 
-const
-    DATE_FORMAT = "ddd MMM DD"
+
 
 const formatLocationName = function(location) {
     return location.type === 'airport'
@@ -62,7 +62,7 @@ export default function ({ from, fromSuggestions, to, toSuggestions, date, onFro
                         classNames={{ container: "", overlay: "dropdown-menu", overlayWrapper: "dropdown open" }}
                         dayPickerProps={{ disabledDays: { before: new Date() } }}
                         inputProps={{ className: "form-control" }}
-                        format={DATE_FORMAT}
+                        format={DATE_WEEK_DAY_MONTH}
                         formatDate={formatDate}
                         parseDate={parseDate}
                         onDayChange={onDateChange}

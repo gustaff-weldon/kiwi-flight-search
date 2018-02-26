@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { Grid } from 'react-bootstrap'
-import moment from 'moment'
 import debounce from 'lodash.debounce'
 import update from 'immutability-helper'
 
@@ -155,7 +154,7 @@ class App extends Component {
 
     render() {
         return (
-            <Grid fluid={true}>
+            <Grid className="content" fluid={true}>
                 <FlightSearchForm
                     from={this.state.flightSearch.from}
                     fromSuggestions={this.state.flightSearch.fromSuggestions}
@@ -167,18 +166,16 @@ class App extends Component {
                     onDateChange={this.handleDateChange}
                 />
 
-                <section className="App-intro">
-                    <FlightList
-                        flights={this.state.flightResults.flights}
-                        currency={this.state.flightResults.currency}
-                    />
-                    <Pagination
-                        offset={this.state.flightResults.offset}
-                        limit={this.state.flightResults.limit}
-                        total={this.state.flightResults.total}
-                        onOffsetChange={this.handleOffsetChange}
-                    />
-                </section>
+                <FlightList
+                    flights={this.state.flightResults.flights}
+                    currency={this.state.flightResults.currency}
+                />
+                <Pagination
+                    offset={this.state.flightResults.offset}
+                    limit={this.state.flightResults.limit}
+                    total={this.state.flightResults.total}
+                    onOffsetChange={this.handleOffsetChange}
+                />
             </Grid>
         )
     }
